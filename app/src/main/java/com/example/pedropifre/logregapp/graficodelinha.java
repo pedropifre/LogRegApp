@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,11 +16,16 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -30,19 +37,38 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.WindowManager;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.Legend.LegendForm;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 public class graficodelinha extends AppCompatActivity {
     private ProgressDialog pd;
 
-    ArrayList<LineDataSet> yAxis;
-    ArrayList<BarEntry> yValues;
-    ArrayList<String> xAxis1;
-    BarEntry values ;
-    LineChart chart;
-
-
-
-    BarData data;
+    ArrayList<String> y;
+    ArrayList<Entry> x;
+    BarEntry values;
+    private LineChart graph;
 
 
     @Override
@@ -53,88 +79,66 @@ public class graficodelinha extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_line_chart);
-
-        pd = new ProgressDialog(graficodelinha.this);
-        pd.setMessage("loading");
+        setData();
 
 
-        // Log.d("array",Arrays.toString(fullData));
-        chart = (LineChart) findViewById(R.id.linechar);
-        load_data_from_server();
+        }
 
 
+    private void setData() {
+        String url = "http://54.94.143.174/login_dados2.php";
+        x = new ArrayList<Entry>();
+        y = new ArrayList<String>();
+        graph = (LineChart) findViewById(R.id.linechar);
 
-    }
-    public void load_data_from_server() {
-        pd.show();
-        String url = "http://192.168.42.191/login_dados2.php";
-        xAxis1 = new ArrayList<>();
-        yAxis = null;
-        yValues = new ArrayList<>();
+        final ArrayList<Entry> entries = new ArrayList<Entry>();
+        String tag_string_req = "req_chart";
 
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                url,
+        StringRequest strReq = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
+
                     @Override
                     public void onResponse(String response) {
-                        Log.d("string",response);
+
 
                         try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonobject = jsonArray.getJSONObject(i);
 
-                            JSONArray jsonarray = new JSONArray(response);
-
-                            for(int i=0; i < jsonarray.length(); i++) {
-
-                                JSONObject jsonobject = jsonarray.getJSONObject(i);
-
-
-                                String score = jsonobject.getString("distancia").trim();
-                                String name = jsonobject.getString("hora").trim();
-
-                                xAxis1.add(name);
-
-                                values = new BarEntry(Float.valueOf(score),i);
-                                yValues.add(values);
+                                int value = jsonobject.getInt("DADO1");
+                                String date = jsonobject.getString("DADO3");
+                                x.add(new Entry(value, i));
+                                y.add(date);
 
                             }
-                        } catch (JSONException e) {
+
+
+                        } catch (Exception e) {
                             e.printStackTrace();
-
-
                         }
-
-
-
-
-
-
-
-                        yAxis = new ArrayList<>();
-                        String names[]= xAxis1.toArray(new String[xAxis1.size()]);
-
-                        chart.setDescription("");
-                        chart.animateXY(2000, 2000);
-                        chart.invalidate();
-                        pd.hide();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        if(error != null){
-
-                            Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
-                            pd.hide();
+                        LineDataSet set1 = new LineDataSet(x, "NAV Data Value");
+                        set1.setLineWidth(1.5f);
+                        set1.setCircleSize(4f);
+                        LineData data = new LineData(y, set1);
+                        graph.setData(data);
                         }
-                    }
+                }, new  Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if(error != null){
+
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(strReq);
 
-        );
 
-        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(stringRequest);
+        };
 
-    }
 
+
+    // sort by x-value
 
 }

@@ -36,7 +36,7 @@ public class treinador extends AppCompatActivity {
         name = (TextView)findViewById(R.id.name);
         Bundle bundle = getIntent().getExtras();
 
-        name.setText("Bem-vindo professor "+bundle.getString("name")+", o que deseja fazer?");
+        name.setText("Bem-vindo professor "+bundle.getString("name2")+", o que deseja fazer?");
 
 
     }

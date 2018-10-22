@@ -82,7 +82,7 @@ public class registrar extends AppCompatActivity {
         final List<String> list1 = new ArrayList<String>();
 
         try {
-            URL url = new URL("http://192.168.0.13/demo_spinner.php");
+            URL url = new URL("http://172.31.6.250/demo_spinner.php");
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.connect();
             is = urlConnection.getInputStream();

@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     Button login_button;
     EditText UserName,Password;
     String username, password;
-    String login_url ="http://192.168.42.191/login.php";
+    String login_url ="http://54.94.143.174/login.php";
     AlertDialog.Builder builder;
 
 
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 if (username.equals("")||password.equals(""))
                 {
                     builder.setTitle("Login invalido");
-                    displayAlert("Usuário e senha não existem");
+                    displayAlert("Usuário e senha não");
 
                 }
                 else{
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                                         else{
                                             Intent intent = new Intent(MainActivity.this, treinador.class);
                                             Bundle bundle = new Bundle();
-                                            bundle.putString("name", jsonObject.getString("name"));
+                                            bundle.putString("name2", jsonObject.getString("name2"));
 
                                             intent.putExtras(bundle);
                                             startActivity(intent);

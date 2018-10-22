@@ -20,17 +20,14 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-public class LoginSuccess extends AppCompatActivity {
+public class DadosTreino extends AppCompatActivity {
     private ProgressDialog pd;
 
     ArrayList<BarDataSet> yAxis;
@@ -38,7 +35,7 @@ public class LoginSuccess extends AppCompatActivity {
     ArrayList<String> xAxis1;
     BarEntry values ;
     BarChart chart;
-
+    TextView teste;
 
 
     BarData data;
@@ -51,9 +48,9 @@ public class LoginSuccess extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_login_success);
-
-        pd = new ProgressDialog(LoginSuccess.this);
+        setContentView(R.layout.activity_dados_treino);
+        teste = (TextView)findViewById(R.id.txt_nome);
+        pd = new ProgressDialog(DadosTreino.this);
         pd.setMessage("loading");
 
 
@@ -66,7 +63,7 @@ public class LoginSuccess extends AppCompatActivity {
     }
     public void load_data_from_server() {
         pd.show();
-        String url = "http://192.168.42.191/login_dados2.php";
+        String url = "http://54.94.143.174/login_dados2.php";
         xAxis1 = new ArrayList<>();
         yAxis = null;
         yValues = new ArrayList<>();
@@ -78,25 +75,30 @@ public class LoginSuccess extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         Log.d("string",response);
-
                         try {
 
                             JSONArray jsonarray = new JSONArray(response);
+
+                            JSONObject objeto = jsonarray.getJSONObject(1);
+
+                            String nome_usuario = objeto.getString("nome").trim();
+                            teste.setText("BPM de "+nome_usuario +"");
+
 
                             for(int i=0; i < jsonarray.length(); i++) {
 
                                 JSONObject jsonobject = jsonarray.getJSONObject(i);
 
 
-                                String score = jsonobject.getString("distancia").trim();
-                                String name = jsonobject.getString("hora").trim();
-
+                                String score = jsonobject.getString("DADO1").trim();
+                                String name = jsonobject.getString("DADO3").trim();
                                 xAxis1.add(name);
 
                                 values = new BarEntry(Float.valueOf(score),i);
                                 yValues.add(values);
 
                             }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
 
@@ -105,7 +107,7 @@ public class LoginSuccess extends AppCompatActivity {
 
 
 
-                        BarDataSet barDataSet1 = new BarDataSet(yValues, "Km corridos (Pedro Pinho)" +
+                        BarDataSet barDataSet1 = new BarDataSet(yValues, "Km corridos" +
                                 "");
                         barDataSet1.setColor(Color.rgb(255, 157, 24));
 
@@ -141,7 +143,7 @@ public class LoginSuccess extends AppCompatActivity {
     }
 
     public void voltar2(View view) {
-        Intent intent = new Intent(LoginSuccess.this, comecar_treino.class);
+        Intent intent = new Intent(DadosTreino.this, comecar_treino.class);
         startActivity(intent);
     }
 }

@@ -13,7 +13,7 @@ public class escolha_jogador extends Activity {
         setContentView(R.layout.activity_escolha_jogador);
     }
     public void ataque(View view) {
-        Intent intent = new Intent(escolha_jogador.this, LoginSuccess.class);
+        Intent intent = new Intent(escolha_jogador.this, DadosTreino.class);
         startActivity(intent);
     }
     public void defesa(View view) {
